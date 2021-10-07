@@ -41,13 +41,20 @@ class TailwindPurge {
         .entries(compilation.assets)
         .filter(([name]) => name.endsWith('.css'));
 
+      /**
+       * Run compilation for every CSS asset
+       */
       for (const [name, asset] of cssAssets) {
+
+        // Find chunk this asset belong to
         const chunk = Array
           .from(compilation.chunks.values())
           .find(chunk => chunk.files.has(name));
         
+        // Find chunk context - it's a entry name
         const { context } = chunk.entryModule || getEntryByRuntime(compilation, chunk);
 
+        // Fin all modules in this entry
         const modulesInContext = Array.from(compilation.modules.values())
           .filter(module =>
             module.type !== 'runtime' &&
@@ -61,7 +68,6 @@ class TailwindPurge {
         }))
 
         const extractors = this.options.extractors || defaultOptions.extractors
-
         const moduleOptions = this.options.modules && this.options.modules[chunk.runtime];
     
         if (moduleOptions) {
