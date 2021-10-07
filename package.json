@@ -1,7 +1,7 @@
 {
-  "name": "@uscreentv/webpack-tailwind-purge",
+  "name": "@uscreentv/webpack-plugin-tailwind-purge",
   "version": "1.0.0",
-  "description": "Webpack plugin that purges CSS in bundle for independent entities",
+  "description": "Webpack plugin that purges CSS in bundle based on modules tree",
   "main": "index.js",
   "scripts": {
     "build": "npx webpack --env=production",
