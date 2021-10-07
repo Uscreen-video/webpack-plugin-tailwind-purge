@@ -13,6 +13,9 @@
     "purgecss": "^4.0.3",
     "webpack-sources": "^3.2.1"
   },
+  "files": [
+    "index.js"
+  ],
   "devDependencies": {
     "purgecss": "^4.0.3",
     "swiper": "^7.0.8",

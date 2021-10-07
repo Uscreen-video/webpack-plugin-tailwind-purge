@@ -1,4 +1,5 @@
 test
+dist
 .*.swp
 ._*
 .DS_Store
