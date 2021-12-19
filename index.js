@@ -6,8 +6,7 @@ const trimEnd = require('lodash/trimEnd');
 
 const PLUGIN_NAME = "TailwindPurge";
 
-const getEntryByRuntime = (compilation, chunk) => {
-  const chunks = Array.from(compilation.chunks.values());
+const getEntryByRuntime = (chunks, chunk) => {
   const match = chunks.find(c => c.runtime === chunk.runtime);
   return match
 }
@@ -28,7 +27,7 @@ const tailwindExtractor = (content) => {
 
 class TailwindPurge {
   constructor(options) {
-    this.options = options;
+    this.options = options || {};
   }
 
   apply(compiler) {
@@ -46,20 +45,20 @@ class TailwindPurge {
        */
       for (const [name, asset] of cssAssets) {
 
+        const chunksArray = Array.from(compilation.chunks.values())
         // Find chunk this asset belong to
-        const chunk = Array
-          .from(compilation.chunks.values())
-          .find(chunk => chunk.files.has(name));
-        
-        // Find chunk context - it's a entry name
-        const { context } = chunk.entryModule || getEntryByRuntime(compilation, chunk);
+        const chunk = chunksArray
+          .find(chunk => chunk.files instanceof Set
+            ? chunk.files.has(name)
+            : chunk.files.includes(name)
+          );
 
         // Fin all modules in this entry
-        const modulesInContext = Array.from(compilation.modules.values())
+        const modules = compilation.chunkGraph.getChunkModules(chunk);
+        const modulesInContext = modules
           .filter(module =>
             module.type !== 'runtime' &&
-            module.context === context &&
-            !module.resource.endsWith('.css')
+            module.resource && !module.resource.endsWith('.css')
           )
 
         const content = modulesInContext.map(module => ({
@@ -78,9 +77,9 @@ class TailwindPurge {
         const purgecss = await new PurgeCSS().purge({
           ...defaultOptions,
           defaultExtractor: tailwindExtractor,
-          safelist: this.options.safelist,
-          blocklist: this.options.blocklist,
-          variables: this.options.variables,
+          safelist: this.options.safelist || [],
+          blocklist: this.options.blocklist || [],
+          variables: this.options.variables || [],
           extractors,
           content,
           css: [

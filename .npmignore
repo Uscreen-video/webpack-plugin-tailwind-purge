@@ -1,5 +1,9 @@
 test
 dist
+tailwind.config.js
+postcss.config.js
+.vscode
+
 .*.swp
 ._*
 .DS_Store
